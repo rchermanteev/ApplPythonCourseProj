@@ -3,11 +3,12 @@ import time
 import os
 from sqlalchemy.orm import sessionmaker
 from models import engine, Image
-from flask import request, abort
+from flask import request, abort, jsonify, g
 from logger_config import LOGGING_CONFIG
 import logging.config
 import validation
 from marshmallow.exceptions import ValidationError
+from image_processing import ImageProcessor
 
 PHOTO_DIR = 'images/'
 Session = sessionmaker(bind=engine)
@@ -21,9 +22,10 @@ app.config['UPLOAD_FOLDER'] = PHOTO_DIR
 @app.route('/photos', methods=['POST'])
 def post_photo():
     try:
-        js = schema.load(request.json)
+        print(request.data, request.form, request.args, request.values, request.files)
+        js = schema.load(request.form)
         image_id = js['image_id']
-        path = os.path.join(app.config['UPLOAD_FOLDER'], image_id)
+        path = os.path.join(app.config['UPLOAD_FOLDER'], str(image_id))
         file = request.files['photo']
         if file:
             file.save(path)
@@ -39,8 +41,17 @@ def post_photo():
 
 @app.route('/photos/<int:image_id>/', methods=['GET'])
 def get_result(image_id):
-    """возврашаем строку запроса"""
-    return 'not implemented'
+    session = g.session
+    item = session.query(Image).get(image_id)
+    if item is None:
+        abort(404, "Unexciting image id")
+    image_processor = ImageProcessor(item.path)
+    result = image_processor.run()
+    item.result = result
+    session.add(item)
+    session.commit()
+    return jsonify({'expression':result})
+
 
 
 @app.before_request
