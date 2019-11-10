@@ -29,8 +29,8 @@ def get_db():
 @app.route('/photos', methods=['POST'])
 def post_photo():
     try:
-        js = schema.load(request.form)
-        image_id = js['image_id']
+        s = schema.load(request.form)
+        image_id = s['image_id']
         path = os.path.join(app.config['UPLOAD_FOLDER'], str(image_id))
         file = request.files['photo']
         if file:
