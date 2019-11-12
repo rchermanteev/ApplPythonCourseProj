@@ -1,1 +1,5 @@
 .idea/
+web/server/images.db
+web/server/log
+web/server/images/
+__pycache__
