@@ -1,16 +1,14 @@
 # TODO добавить логирование
 import requests
 from schema import ResponseSchema
-from  marshmallow.exceptions import ValidationError
+from marshmallow.exceptions import ValidationError
+from wolfram_api import WolfQueryException, api_query
 
 schema = ResponseSchema()
 
 
-def error_message(update, context, message="Произошла ошибка при загрузке фото. Попробуйтеещё раз."):
+def error_message(update, context, message="Произошла ошибка. Попробуйте ещё раз."):
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-
-def wolfram_quary(update, context, expr):
-    pass
 
 
 def start(update, context, user_data):
@@ -34,8 +32,11 @@ def photo(update, context, user_data):
         s = schema.load(r.content)
         expr = s['expression']
         context.bot.send_message(chat_id=update.effective_chat.id, text=f"Вы ввели выражение: {expr}")
-        wolfram_quary(update, context, expr)
-    except ValidationError:
+        text, img_urls = api_query(expr)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=f"Результат: \n {text}")
+        for url in img_urls:
+            context.bot.send_photo(chat_id=update.effective_chat.id, photo=url)
+    except (ValidationError, WolfQueryException):
         error_message(update, context)
 
 

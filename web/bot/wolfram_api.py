@@ -7,8 +7,9 @@ client = wolframalpha.Client(WOLFRAM_API_TOKEN)
 class WolfQueryException(Exception):
     pass
 
-def query(quary_string):
-    res = client.query(quary_string)
+
+def api_query(query_string):
+    res = client.query(query_string)
     if res['@success'] == 'false':
         raise WolfQueryException
     text = '\n'.join(['%s:: %s' % (key, value) for (key, value) in res.details.items()])
