@@ -1,6 +1,7 @@
 from tokens import TELEGRAM_TOKEN
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import handlers
+from logger import logger
 
 
 class Bot:
@@ -11,6 +12,7 @@ class Bot:
     unknown_handler = MessageHandler(Filters.command, handlers.unknown, pass_user_data=True)
 
     def __init__(self):
+        print(TELEGRAM_TOKEN)
         self.updater = Updater(token=TELEGRAM_TOKEN)
         self.dispatcher = self.updater.dispatcher
         self.dispatcher.add_handler(self.start_handler)
@@ -19,6 +21,7 @@ class Bot:
 
     def start(self):
         self.updater.start_polling()
+        logger.info('Bot running')
 
 
 if __name__ == "__main__":

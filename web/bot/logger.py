@@ -1,3 +1,5 @@
+import logging.config
+
 LOGGING_CONFIG = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -11,16 +13,19 @@ LOGGING_CONFIG = {
             'level': 'INFO',
             'formatter': 'standard',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'log',
-            'maxBytes': 1000000,
+            'filename': 'botlog',
+            'maxBytes': 100000,
             'backupCount': 3,
         },
     },
     'loggers': {
-        'RequestLogger': {
+        'BotLogger': {
             'handlers': ['default'],
             'level': 'INFO',
             'propagate': False
         },
     }
 }
+
+logger = logging.getLogger('BotLogger')
+logging.config.dictConfig(LOGGING_CONFIG)
