@@ -1,3 +1,11 @@
 python-telegram-bot
 flask
 requests
+sqlalchemy
+marshmallow
+wolframalpha
+gunicorn
+supervisor
+opencv-python-4.1.1.26
+tensorflow
+keras
